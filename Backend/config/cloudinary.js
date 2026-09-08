@@ -51,12 +51,64 @@ const musicUpload = multer({
   },
 });
 
-module.exports = { cloudinary, upload, musicUpload, friendlyUploadError };
+function isVideoUpload(file) {
+  return (
+    /^video\//i.test(file.mimetype) ||
+    /\.(mp4|webm|mov|m4v)$/i.test(file.originalname || "")
+  );
+}
+
+const letterMediaStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (_req, file) => {
+    if (isVideoUpload(file)) {
+      return {
+        folder: "faith-forever/letter-video",
+        resource_type: "video",
+        allowed_formats: ["mp4", "webm", "mov", "m4v"],
+      };
+    }
+    return {
+      folder: "faith-forever",
+      allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
+      resource_type: "image",
+      transformation: [{ width: 1600, crop: "limit" }],
+    };
+  },
+});
+
+const letterMediaUpload = multer({
+  storage: letterMediaStorage,
+  limits: { fileSize: 40 * 1024 * 1024 },
+  fileFilter(_req, file, cb) {
+    if (/^image\/(jpe?g|png|webp|gif)$/i.test(file.mimetype)) {
+      cb(null, true);
+      return;
+    }
+    if (isVideoUpload(file)) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error("Use a JPEG, PNG, WebP, GIF, MP4, WebM, or MOV file."));
+  },
+});
+
+module.exports = {
+  cloudinary,
+  upload,
+  musicUpload,
+  letterMediaUpload,
+  isVideoUpload,
+  friendlyUploadError,
+};
 
 function friendlyUploadError(err) {
   const message = String(err && err.message ? err.message : "");
   if (err?.http_code === 403 || /403/.test(message) || /missing permissions/i.test(message)) {
     return "Cloudinary blocked the upload. In Cloudinary → API Keys, edit this key and allow Upload / Create.";
   }
-  return message || "Image upload failed.";
+  if (/file size too large/i.test(message) || /maximum is/i.test(message)) {
+    return "That file is too large. Try a shorter clip, or paste a YouTube / Drive link instead.";
+  }
+  return message || "Upload failed.";
 }

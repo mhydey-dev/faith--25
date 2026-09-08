@@ -14,6 +14,8 @@ const PORT = Number(process.env.PORT) || 5000;
 const LOCAL_ORIGINS = [
   "http://localhost:8080",
   "http://127.0.0.1:8080",
+  "http://localhost:8081",
+  "http://127.0.0.1:8081",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "http://localhost:3000",
@@ -39,10 +41,33 @@ function allowedOrigins() {
 
 const origins = allowedOrigins();
 
+function isPrivateLanHost(hostname) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]" ||
+    hostname === "::1" ||
+    /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+    /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname)
+  );
+}
+
+function originAllowed(origin) {
+  if (!origin) return true;
+  if (origins.has(origin)) return true;
+  try {
+    const url = new URL(origin);
+    return url.protocol === "http:" && isPrivateLanHost(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || origins.has(origin)) {
+      if (originAllowed(origin)) {
         callback(null, true);
         return;
       }

@@ -33,19 +33,22 @@ export function youtubeVideoId(url: string): string | null {
 export function youtubeEmbedSrc(
   videoId: string,
   origin: string,
-  options?: { autoplay?: boolean; mute?: boolean },
+  options?: { autoplay?: boolean; mute?: boolean; controls?: boolean; loop?: boolean },
 ): string {
+  const loop = options?.loop !== false;
   const params = new URLSearchParams({
     autoplay: options?.autoplay === false ? "0" : "1",
     mute: options?.mute === false ? "0" : "1",
-    loop: "1",
-    playlist: videoId,
     enablejsapi: "1",
-    controls: "0",
+    controls: options?.controls ? "1" : "0",
     rel: "0",
     playsinline: "1",
     origin,
   });
+  if (loop) {
+    params.set("loop", "1");
+    params.set("playlist", videoId);
+  }
   return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
 }
 

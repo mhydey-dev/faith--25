@@ -1,4 +1,4 @@
-import { memories } from "./data";
+import { timelinePlaceholders as memories } from "./data";
 import { Reveal } from "./Reveal";
 
 export function MemoryLane() {

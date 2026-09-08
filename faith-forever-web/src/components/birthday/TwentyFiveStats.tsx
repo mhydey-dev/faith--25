@@ -21,7 +21,7 @@ export function TwentyFiveStats() {
               {AGE} years of amazing
             </h2>
             <p className="mt-4 font-serif text-lg italic text-muted-foreground">
-              Not spreadsheet stats — the kind that feel true when you know {HER_FIRST}.
+            Quarter-century metrics. Not just data—the kind of stats that feel true to anyone who knows {HER_FIRST}.
             </p>
           </div>
         </Reveal>

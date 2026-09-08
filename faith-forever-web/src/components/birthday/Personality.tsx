@@ -12,7 +12,7 @@ export function Personality() {
               The personality of {HER_FIRST}
             </h2>
             <p className="mt-5 font-serif text-lg italic text-muted-foreground sm:text-xl">
-              Before the photos and the numbers — this is the feeling of knowing her.
+            A quiet confidence and a loud sense of self — this is the feeling of knowing her
             </p>
           </div>
         </Reveal>

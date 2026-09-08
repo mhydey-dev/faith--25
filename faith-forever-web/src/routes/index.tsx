@@ -7,7 +7,6 @@ import { PortraitStory } from "@/components/birthday/PortraitStory";
 import { PhotoTimeline } from "@/components/birthday/PhotoTimeline";
 import { TwentyFiveStats } from "@/components/birthday/TwentyFiveStats";
 import { KnowHerQuiz } from "@/components/birthday/KnowHerQuiz";
-import { LockedLetter } from "@/components/birthday/LockedLetter";
 import { WishWall } from "@/components/birthday/WishWall";
 import { Footer } from "@/components/birthday/Footer";
 import { useConfetti } from "@/components/birthday/effects";
@@ -78,7 +77,6 @@ function Index() {
       <PhotoTimeline initialPhotos={photos} />
       <TwentyFiveStats />
       <KnowHerQuiz questions={site.quiz} />
-      <LockedLetter title={site.loveLetterTitle} />
       <WishWall initialMessages={messages} />
       <Footer onSecret={celebrate} />
     </main>

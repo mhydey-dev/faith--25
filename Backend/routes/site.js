@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const Site = require("../models/Site");
 const { requireAdmin, hashLetterPassword } = require("../middleware/admin");
-const { cloudinary, upload, friendlyUploadError } = require("../config/cloudinary");
+const { cloudinary, letterMediaUpload, isVideoUpload, friendlyUploadError } = require("../config/cloudinary");
 
 const router = express.Router();
 
@@ -38,7 +38,77 @@ function letterImagesPayload(site) {
     _id: String(image._id),
     imageUrl: image.imageUrl,
     caption: image.caption || "",
+    kind: image.kind === "video" ? "video" : "image",
   }));
+}
+
+function youtubeVideoId(url) {
+  try {
+    const parsed = new URL(url.trim());
+    const host = parsed.hostname.replace(/^www\./, "");
+    if (host === "youtu.be") {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      return id || null;
+    }
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com" ||
+      host === "youtube-nocookie.com"
+    ) {
+      const fromQuery = parsed.searchParams.get("v");
+      if (fromQuery) return fromQuery;
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      if ((parts[0] === "embed" || parts[0] === "shorts" || parts[0] === "live") && parts[1]) {
+        return parts[1];
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function isAllowedVideoLink(url) {
+  if (youtubeVideoId(url)) return true;
+  if (/drive\.google\.com\/file\/d\//i.test(url)) return true;
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.toLowerCase();
+    if (/\.(mp4|webm|mov|m4v)$/i.test(path)) return true;
+    return parsed.hostname.includes("res.cloudinary.com") && path.includes("/video/upload/");
+  } catch {
+    return false;
+  }
+}
+
+async function destroyLetterMedia(item) {
+  if (!item?.cloudinaryId) return;
+  const order = item.kind === "video" ? ["video", "image"] : ["image", "video"];
+  for (const resource_type of order) {
+    try {
+      await cloudinary.uploader.destroy(item.cloudinaryId, { resource_type });
+      return;
+    } catch {
+      /* try the other resource type */
+    }
+  }
+}
+
+async function addOrReplaceLetterMedia(site, next, atRaw, res) {
+  if (!Array.isArray(site.loveLetterImages)) site.loveLetterImages = [];
+  const at = Number.parseInt(String(atRaw ?? ""), 10);
+  if (Number.isInteger(at) && at >= 0 && at < site.loveLetterImages.length) {
+    await destroyLetterMedia(site.loveLetterImages[at]);
+    site.loveLetterImages.splice(at, 1, next);
+    return true;
+  }
+  if (site.loveLetterImages.length >= 20) {
+    res.status(400).json({ error: "You can add up to 20 photos and videos in the letter." });
+    return false;
+  }
+  site.loveLetterImages.push(next);
+  return true;
 }
 
 function publicSitePayload(site) {
@@ -152,11 +222,11 @@ router.delete("/admin/music", requireAdmin, async (_req, res, next) => {
 });
 
 router.post("/admin/letter-images", requireAdmin, (req, res, next) => {
-  upload.single("image")(req, res, (err) => {
+  letterMediaUpload.single("image")(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       const message =
         err.code === "LIMIT_FILE_SIZE"
-          ? "Image must be 5MB or smaller."
+          ? "File must be 40MB or smaller. For longer clips, paste a YouTube or Drive link."
           : err.message;
       res.status(400).json({ error: message });
       return;
@@ -170,37 +240,49 @@ router.post("/admin/letter-images", requireAdmin, (req, res, next) => {
 }, async (req, res, next) => {
   try {
     if (!req.file) {
-      res.status(400).json({ error: "An image file is required (field name: image)." });
+      res.status(400).json({ error: "A photo or video file is required (field name: image)." });
       return;
     }
 
     const site = await Site.getMain(true);
-    if (!Array.isArray(site.loveLetterImages)) site.loveLetterImages = [];
     const caption = typeof req.body.caption === "string" ? req.body.caption.trim() : "";
     const next = {
       imageUrl: req.file.path,
       cloudinaryId: req.file.filename,
       caption,
+      kind: isVideoUpload(req.file) ? "video" : "image",
     };
 
-    const at = Number.parseInt(String(req.body.at ?? ""), 10);
-    if (Number.isInteger(at) && at >= 0 && at < site.loveLetterImages.length) {
-      const previous = site.loveLetterImages[at];
-      if (previous?.cloudinaryId) {
-        try {
-          await cloudinary.uploader.destroy(previous.cloudinaryId);
-        } catch {
-          /* ignore */
-        }
-      }
-      site.loveLetterImages.splice(at, 1, next);
-    } else {
-      if (site.loveLetterImages.length >= 20) {
-        res.status(400).json({ error: "You can add up to 20 photos in the letter." });
-        return;
-      }
-      site.loveLetterImages.push(next);
+    if (!(await addOrReplaceLetterMedia(site, next, req.body.at, res))) return;
+    await site.save();
+    res.status(201).json(adminSitePayload(site));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/admin/letter-video-link", requireAdmin, async (req, res, next) => {
+  try {
+    const url = parseMusicUrl(req.body?.url);
+    if (!url) {
+      res.status(400).json({ error: "Enter a valid http(s) video link." });
+      return;
     }
+    if (!isAllowedVideoLink(url)) {
+      res.status(400).json({ error: "Paste a YouTube, Google Drive, or direct video (.mp4) link." });
+      return;
+    }
+
+    const site = await Site.getMain(true);
+    const caption = typeof req.body.caption === "string" ? req.body.caption.trim() : "";
+    const next = {
+      imageUrl: url,
+      cloudinaryId: "",
+      caption,
+      kind: "video",
+    };
+
+    if (!(await addOrReplaceLetterMedia(site, next, req.body.at, res))) return;
     await site.save();
     res.status(201).json(adminSitePayload(site));
   } catch (err) {
@@ -217,11 +299,7 @@ router.delete("/admin/letter-images/:id", requireAdmin, async (req, res, next) =
       res.status(404).json({ error: "Letter photo not found." });
       return;
     }
-    try {
-      await cloudinary.uploader.destroy(image.cloudinaryId);
-    } catch {
-      /* ignore */
-    }
+    await destroyLetterMedia(image);
     image.deleteOne();
     await site.save();
     res.json(adminSitePayload(site));

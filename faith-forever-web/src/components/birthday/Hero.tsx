@@ -45,11 +45,11 @@ export function Hero() {
               className="animate-drift-up mt-3 max-w-md font-serif text-lg italic text-primary-foreground/80 sm:text-xl"
               style={{ animationDelay: "220ms" }}
             >
-              A quarter-century of {HER_NAME} — personality, pictures, and the people who love her.
+              A quarter-century of {HER_NAME} — 25 Years, 100% Faith.
             </p>
           </div>
           <div
-            className="animate-drift-up flex shrink-0 flex-col gap-3 sm:items-end"
+            className="animate-drift-up shrink-0 sm:items-end"
             style={{ animationDelay: "320ms" }}
           >
             <a
@@ -58,12 +58,6 @@ export function Hero() {
               className="inline-flex items-center gap-2 bg-accent px-7 py-3.5 text-sm font-medium uppercase tracking-[0.18em] text-accent-foreground transition-transform duration-300 hover:-translate-y-1"
             >
               Meet her →
-            </a>
-            <a
-              href="#letter"
-              className="inline-flex items-center justify-center border border-primary-foreground/40 px-7 py-3 text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/90 transition-colors hover:border-marigold hover:text-marigold"
-            >
-              Private letter 🔒
             </a>
           </div>
         </div>

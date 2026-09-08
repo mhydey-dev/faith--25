@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import {
   ADMIN_KEY_STORAGE,
+  addLetterVideoLink,
   adminLogin,
   deleteLetterImage,
   deleteMusic,
@@ -19,8 +20,8 @@ import {
   type Photo,
   type QuizQuestion,
 } from "@/lib/api";
+import { isLetterVideo, letterVideoPoster } from "@/lib/letter-media";
 import { playableAudioUrl, youtubeVideoId } from "@/lib/music";
-import { splitLetterParagraphs } from "@/lib/letter";
 
 export const Route = createFileRoute("/studio")({
   head: () => ({
@@ -68,10 +69,6 @@ function StudioPage() {
   const timeline = useMemo(
     () => photos.filter((p) => (p.kind ?? "timeline") === "timeline"),
     [photos],
-  );
-  const letterParagraphs = useMemo(
-    () => splitLetterParagraphs(loveLetterBody),
-    [loveLetterBody],
   );
 
   const applySite = (site: AdminSite) => {
@@ -158,7 +155,7 @@ function StudioPage() {
       }
 
       if (loveLetterBody.trim() && !letterPassword.trim() && !hasLetterPassword) {
-        throw new Error("Set an unlock password so Faith can open the letter on the homepage.");
+        throw new Error("Set an unlock password so Faith can open the hidden letter from the menu.");
       }
 
       const site = await saveAdminSite(adminKey, {
@@ -222,15 +219,35 @@ function StudioPage() {
         }
       }
       if (site) applySite(site);
+      const allVideo = files.every((file) => file.type.startsWith("video"));
       toast.success(
         files.length > 1
-          ? `${files.length} photos added — one per paragraph from the first.`
+          ? `${files.length} files added to the letter album.`
           : typeof at === "number"
-            ? `Photo set on paragraph ${at + 1}.`
-            : "Photo added to the next paragraph.",
+            ? allVideo
+              ? "Video replaced."
+              : "Photo replaced."
+            : allVideo
+              ? "Video added to the letter album."
+              : "Photo added to the letter album.",
       );
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      setUploadingLetter(false);
+    }
+  };
+
+  const onLetterVideoLink = async (url: string) => {
+    const trimmed = url.trim();
+    if (!trimmed) return;
+    setUploadingLetter(true);
+    try {
+      const site = await addLetterVideoLink({ url: trimmed, adminKey });
+      applySite(site);
+      toast.success("Video link added to the letter album.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not add that video link.");
     } finally {
       setUploadingLetter(false);
     }
@@ -240,7 +257,7 @@ function StudioPage() {
     try {
       const site = await deleteLetterImage(id, adminKey);
       applySite(site);
-      toast.success("Letter photo deleted.");
+      toast.success("Removed from the letter album.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Delete failed.");
     }
@@ -547,9 +564,9 @@ function StudioPage() {
         <section className="space-y-4 border-t border-border pt-10">
           <h2 className="font-display text-2xl font-semibold">Locked love letter</h2>
           <p className="text-sm text-muted-foreground">
-            Faith opens this on the public homepage — tap <strong>Private</strong> in the menu, the
-            hero button, or the sealed envelope after the quiz. Save both the letter and an unlock
-            password, or she cannot open it.
+            Faith opens this from the public site — tap <strong>Private</strong> in the menu, enter
+            the unlock password, and she is taken to a hidden page. Save both the letter and an
+            unlock password, or she cannot open it.
           </p>
           <input
             value={loveLetterTitle}
@@ -590,94 +607,57 @@ function StudioPage() {
           ) : null}
 
           <div className="space-y-3 pt-4">
-            <h3 className="font-display text-lg font-semibold">Photos for each paragraph</h3>
+            <h3 className="font-display text-lg font-semibold">Pictures & videos with the letter</h3>
             <p className="text-sm text-muted-foreground">
-              Press Enter between paragraphs in the letter above. Choose several photos at once —
-              they fill from paragraph 1 downward (first photo with the first paragraph, second with
-              the next, and so on).
+              These sit in a keepsake album after she finishes reading. Short clips can be uploaded
+              (about 40MB). Longer memories work better as a YouTube or Google Drive link.
             </p>
-            {letterParagraphs.length ? (
-              <ul className="space-y-3">
-                {letterParagraphs.map((paragraph, index) => {
-                  const image = letterImages[index];
-                  return (
-                    <li key={`para-${index}`} className="space-y-3 border border-border p-3">
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Paragraph {index + 1}
-                      </p>
-                      <p className="line-clamp-3 font-serif text-sm">{paragraph}</p>
-                      {image ? (
-                        <img src={image.imageUrl} alt="" className="max-h-40 w-full object-cover" />
-                      ) : (
-                        <p className="text-sm text-muted-foreground">No photo on this paragraph yet.</p>
-                      )}
-                      <div className="flex flex-wrap gap-3">
-                        <label className="inline-flex cursor-pointer bg-primary px-4 py-2 text-[10px] font-medium uppercase tracking-[0.18em] text-primary-foreground">
-                          {image ? "Replace photo" : "Add photo"}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="sr-only"
-                            disabled={uploadingLetter}
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              e.target.value = "";
-                              if (!file) return;
-                              if (image) {
-                                void onLetterImages([file], index);
-                                return;
-                              }
-                              if (index !== letterImages.length) {
-                                toast.error("Add photos from the first empty paragraph downward.");
-                                return;
-                              }
-                              void onLetterImages([file]);
-                            }}
-                          />
-                        </label>
-                        {image ? (
-                          <button
-                            type="button"
-                            onClick={() => void onDeleteLetterImage(image._id)}
-                            className="text-[10px] uppercase tracking-wider text-destructive"
-                          >
-                            Remove
-                          </button>
-                        ) : null}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Write the letter first, with a new line between each paragraph.
-              </p>
-            )}
-            {letterImages.length > letterParagraphs.length ? (
-              <ul className="space-y-3">
-                {letterImages.slice(letterParagraphs.length).map((image, extraIndex) => (
-                  <li key={image._id} className="flex gap-4 border border-border p-3">
-                    <img src={image.imageUrl} alt="" className="h-20 w-28 object-cover" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Extra photo {letterParagraphs.length + extraIndex + 1}
-                      </p>
+            {letterImages.length ? (
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {letterImages.map((image, index) => (
+                  <li key={image._id} className="space-y-3 border border-border p-3">
+                    <StudioMediaPreview item={image} />
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex cursor-pointer bg-primary px-4 py-2 text-[10px] font-medium uppercase tracking-[0.18em] text-primary-foreground">
+                        Replace
+                        <input
+                          type="file"
+                          accept="image/*,video/mp4,video/webm,video/quicktime"
+                          className="sr-only"
+                          disabled={uploadingLetter}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            e.target.value = "";
+                            if (!file) return;
+                            void onLetterImages([file], index);
+                          }}
+                        />
+                      </label>
                       <button
                         type="button"
                         onClick={() => void onDeleteLetterImage(image._id)}
-                        className="mt-2 text-xs uppercase tracking-wider text-destructive"
+                        className="text-[10px] uppercase tracking-wider text-destructive"
                       >
-                        Delete
+                        Remove
                       </button>
                     </div>
                   </li>
                 ))}
               </ul>
-            ) : null}
-            <LetterImageUpload
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Nothing yet. Add photos, upload a short video, or paste a link.
+              </p>
+            )}
+            <div className="flex flex-wrap gap-3">
+              <LetterImageUpload
+                disabled={uploadingLetter}
+                onUpload={(files) => void onLetterImages(files)}
+              />
+            </div>
+            <LetterVideoLinkForm
               disabled={uploadingLetter}
-              onUpload={(files) => void onLetterImages(files)}
+              onAdd={(url) => void onLetterVideoLink(url)}
             />
           </div>
         </section>
@@ -708,10 +688,10 @@ function LetterImageUpload({
         disabled ? "pointer-events-none opacity-60" : ""
       }`}
     >
-      {disabled ? "Uploading…" : "Add photos from paragraph 1"}
+      {disabled ? "Uploading…" : "Add photos or videos"}
       <input
         type="file"
-        accept="image/*"
+        accept="image/*,video/mp4,video/webm,video/quicktime"
         multiple
         className="sr-only"
         disabled={disabled}
@@ -722,6 +702,62 @@ function LetterImageUpload({
         }}
       />
     </label>
+  );
+}
+
+function LetterVideoLinkForm({
+  onAdd,
+  disabled,
+}: {
+  onAdd: (url: string) => void;
+  disabled?: boolean;
+}) {
+  const [url, setUrl] = useState("");
+  return (
+    <form
+      className="flex flex-col gap-3 sm:flex-row"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const next = url.trim();
+        if (!next) return;
+        onAdd(next);
+        setUrl("");
+      }}
+    >
+      <input
+        value={url}
+        onChange={(event) => setUrl(event.target.value)}
+        placeholder="YouTube, Drive, or .mp4 link"
+        disabled={disabled}
+        className="h-11 flex-1 border border-input bg-background px-4"
+      />
+      <button
+        type="submit"
+        disabled={disabled || !url.trim()}
+        className="h-11 border border-primary px-5 text-xs font-medium uppercase tracking-[0.18em] text-primary disabled:opacity-60"
+      >
+        Add video link
+      </button>
+    </form>
+  );
+}
+
+function StudioMediaPreview({ item }: { item: LetterImage }) {
+  const video = isLetterVideo(item);
+  const poster = video ? letterVideoPoster(item.imageUrl) : null;
+  return (
+    <div className="relative overflow-hidden">
+      {video && !poster ? (
+        <video src={item.imageUrl} muted playsInline className="aspect-[4/5] w-full object-cover" />
+      ) : (
+        <img src={poster || item.imageUrl} alt="" className="aspect-[4/5] w-full object-cover" />
+      )}
+      {video ? (
+        <p className="absolute left-2 top-2 bg-card/90 px-2 py-1 text-[10px] uppercase tracking-wider">
+          Video
+        </p>
+      ) : null}
+    </div>
   );
 }
 

@@ -1,6 +1,10 @@
-const API_BASE = String(
-  (import.meta as any).env?.VITE_API_URL ?? "http://localhost:5000/api",
-).replace(/\/$/, "");
+function resolveApiBase() {
+  const fromEnv = String((import.meta as any).env?.VITE_API_URL ?? "").replace(/\/$/, "");
+  if (fromEnv && !fromEnv.startsWith("/")) return fromEnv;
+  return "http://127.0.0.1:5000/api";
+}
+
+const API_BASE = resolveApiBase();
 
 export type Photo = {
   _id: string;
@@ -42,6 +46,7 @@ export type LetterImage = {
   _id: string;
   imageUrl: string;
   caption: string;
+  kind?: "image" | "video";
 };
 
 export type AdminSite = PublicSite & {
@@ -202,6 +207,23 @@ export async function uploadLetterImage(input: {
     method: "POST",
     body,
     adminKey: input.adminKey,
+  });
+}
+
+export async function addLetterVideoLink(input: {
+  url: string;
+  caption?: string;
+  at?: number;
+  adminKey: string;
+}): Promise<AdminSite> {
+  return request<AdminSite>("/site/admin/letter-video-link", {
+    method: "POST",
+    adminKey: input.adminKey,
+    body: JSON.stringify({
+      url: input.url,
+      caption: input.caption || "",
+      ...(typeof input.at === "number" ? { at: input.at } : {}),
+    }),
   });
 }
 

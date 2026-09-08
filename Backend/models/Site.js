@@ -49,8 +49,9 @@ const DEFAULT_QUIZ = [
 const letterImageSchema = new mongoose.Schema(
   {
     imageUrl: { type: String, required: true, trim: true },
-    cloudinaryId: { type: String, required: true, trim: true },
+    cloudinaryId: { type: String, default: "", trim: true },
     caption: { type: String, default: "", trim: true, maxlength: 200 },
+    kind: { type: String, enum: ["image", "video"], default: "image" },
   },
   { timestamps: true },
 );

@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 
 function requireAdmin(req, res, next) {
-  const configured = process.env.ADMIN_KEY;
+  const configured = String(process.env.ADMIN_KEY || "").trim();
   if (!configured) {
     res.status(503).json({
       error: "Admin is not configured. Set ADMIN_KEY in the Backend .env file.",
@@ -9,7 +9,7 @@ function requireAdmin(req, res, next) {
     return;
   }
 
-  const provided = req.get("x-admin-key") || "";
+  const provided = String(req.get("x-admin-key") || "").trim();
   const a = Buffer.from(provided);
   const b = Buffer.from(configured);
 

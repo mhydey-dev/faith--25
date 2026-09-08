@@ -45,7 +45,7 @@ export function PortraitStory({ initialPhotos }: { initialPhotos: Photo[] }) {
             <figcaption className="mt-6 font-serif text-sm italic text-muted-foreground">
               {featured?.caption?.trim()
                 ? featured.caption
-                : "Her portrait for this chapter — upload it from Studio."}
+                : "To know her is to love her—cheers to 25 years of incredible impact"}
             </figcaption>
           </figure>
         </Reveal>

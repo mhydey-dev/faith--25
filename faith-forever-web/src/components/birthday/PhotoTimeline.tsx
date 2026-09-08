@@ -61,7 +61,7 @@ export function PhotoTimeline({ initialPhotos }: { initialPhotos: Photo[] }) {
               Frames of her becoming
             </h2>
             <p className="mt-4 font-serif text-lg italic text-muted-foreground">
-              Moments you choose — managed from Studio, shown here for everyone celebrating her.
+            A timeline of favorite memories and unforgettable chapters
             </p>
           </div>
         </Reveal>

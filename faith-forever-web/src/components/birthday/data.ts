@@ -8,16 +8,18 @@ export const HER_NAME = "Faith Funmilayo";
 export const HER_FIRST = "Faith";
 export const AGE = 25;
 
-export const sections = [
-  { id: "hero", label: "Home" },
-  { id: "personality", label: "Her" },
-  { id: "portrait", label: "Story" },
-  { id: "timeline", label: "Timeline" },
-  { id: "stats", label: "25 Years" },
-  { id: "quiz", label: "Quiz" },
-  { id: "letter", label: "Private" },
-  { id: "wishes", label: "Wishes" },
+export const navItems = [
+  { id: "hero", label: "Home", kind: "section" as const },
+  { id: "personality", label: "Her", kind: "section" as const },
+  { id: "portrait", label: "Story", kind: "section" as const },
+  { id: "timeline", label: "Timeline", kind: "section" as const },
+  { id: "stats", label: "25 Years", kind: "section" as const },
+  { id: "quiz", label: "Quiz", kind: "section" as const },
+  { id: "private", label: "Private", kind: "private" as const },
+  { id: "wishes", label: "Wishes", kind: "section" as const },
 ];
+
+export const sections = navItems.filter((item) => item.kind === "section");
 
 export const personalityTraits = [
   {
@@ -51,8 +53,7 @@ export const portraitStory = {
   eyebrow: "Chapter twenty-five",
   headline: "This is her season.",
   paragraphs: [
-    "Faith Funmilayo is turning twenty-five — a full quarter-century of laughter, growth, late-night talks, and the kind of courage that does not always look loud.",
-    "Upload her portrait above, then leave this story (or rewrite it) so everyone who visits knows who she is: bright, intentional, and deeply loved.",
+    "25 years of incredible growth, beauty, and resilience. May you always look back with pride on how far you’ve come and look forward with confidence toward everything ahead. Watching your journey unfold is an absolute privilege",
     "Here is to the girl she was, the woman she is, and every version still ahead.",
   ],
 };
