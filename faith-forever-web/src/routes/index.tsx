@@ -44,16 +44,16 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Faith Funmilayo is 25 — Celebrate With Her" },
+      { title: "25 Years of Faith" },
       {
         name: "description",
         content:
           "A birthday site for Faith turning 25: her personality, portrait story, photo timeline, quarter-century stats, a quiz about her, and a wall of birthday wishes.",
       },
-      { property: "og:title", content: "Faith Funmilayo — Turning 25" },
+      { property: "og:title", content: "25 Years of Faith" },
       {
         property: "og:description",
-        content: "Personality, pictures, stats, quiz, and birthday wishes for Faith at 25.",
+        content: "The Story • The Numbers • The Journey • The Trivia • The Words",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
