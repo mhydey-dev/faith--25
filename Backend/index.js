@@ -29,7 +29,6 @@ function parseOriginList(value) {
     .filter(Boolean);
 }
 
-/** Same idea as the frontend API URL: localhost by default, extra origins from env. */
 function allowedOrigins() {
   const fromEnv = [
     ...parseOriginList(process.env.CLIENT_ORIGIN),
@@ -38,8 +37,6 @@ function allowedOrigins() {
 
   return new Set([...LOCAL_ORIGINS, ...fromEnv]);
 }
-
-const origins = allowedOrigins();
 
 function isPrivateLanHost(hostname) {
   return (
@@ -55,28 +52,29 @@ function isPrivateLanHost(hostname) {
 
 function originAllowed(origin) {
   if (!origin) return true;
-  if (origins.has(origin)) return true;
+  if (allowedOrigins().has(origin)) return true;
   try {
     const url = new URL(origin);
+    if (url.protocol === "https:" && url.hostname.endsWith(".onrender.com")) return true;
     return url.protocol === "http:" && isPrivateLanHost(url.hostname);
   } catch {
     return false;
   }
 }
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (originAllowed(origin)) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error(`Origin not allowed by CORS: ${origin}`));
-    },
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "x-admin-key"],
-  }),
-);
+const corsOptions = {
+  origin(origin, callback) {
+    callback(null, originAllowed(origin));
+  },
+  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "x-admin-key"],
+  optionsSuccessStatus: 204,
+  maxAge: 86400,
+};
+
+app.use(cors(corsOptions));
+// Express 5 no longer treats "*" as a catch-all, so preflight must be named.
+app.options("/{*path}", cors(corsOptions));
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (_req, res) => {
@@ -92,18 +90,13 @@ app.use((req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
-    if (err.message && err.message.startsWith("Origin not allowed by CORS")) {
-      res.status(403).json({ error: err.message });
-      return;
-    }
-
-    if (err.name === "ValidationError") {
-      const message = Object.values(err.errors)
-        .map((e) => e.message)
-        .join(" ");
-      res.status(400).json({ error: message });
-      return;
-    }
+  if (err.name === "ValidationError") {
+    const message = Object.values(err.errors)
+      .map((e) => e.message)
+      .join(" ");
+    res.status(400).json({ error: message });
+    return;
+  }
 
   console.error(err);
   res.status(err.status || 500).json({
