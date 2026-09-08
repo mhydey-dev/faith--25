@@ -27,8 +27,8 @@ function mapPhotoToItem(photo: Photo): GalleryItem {
     id: photo._id,
     image: photo.imageUrl,
     date: photo.createdAt ? formatPhotoDate(photo.createdAt) : "",
-    title: caption.length > 48 ? `${caption.slice(0, 48)}…` : caption,
-    caption,
+    title: caption,
+    caption: "",
   };
 }
 
@@ -78,21 +78,23 @@ export function PhotoTimeline({ initialPhotos }: { initialPhotos: Photo[] }) {
                   <div className="hidden pt-2 sm:block">
                     <span className="block h-3 w-3 rounded-full bg-marigold ring-4 ring-background" />
                   </div>
-                  <figure>
+                  <figure className="min-w-0">
                     <img
                       src={item.image}
                       alt={item.title}
                       loading="lazy"
-                      width={1100}
-                      height={700}
-                      className="aspect-[16/10] w-full object-cover"
+                      className="mx-auto block h-auto max-h-[min(85svh,44rem)] w-auto max-w-full"
                     />
                     <figcaption className="mt-5 max-w-xl">
                       <p className="text-xs font-medium uppercase tracking-[0.25em] text-sea">
                         {item.date || `Moment ${i + 1}`}
                       </p>
-                      <p className="mt-2 font-display text-2xl font-semibold">{item.title}</p>
-                      <p className="mt-2 font-serif text-muted-foreground">{item.caption}</p>
+                      <p className="mt-2 text-balance font-display text-2xl font-semibold leading-snug">
+                        {item.title}
+                      </p>
+                      {item.caption && item.caption !== item.title ? (
+                        <p className="mt-2 font-serif text-muted-foreground">{item.caption}</p>
+                      ) : null}
                     </figcaption>
                   </figure>
                 </li>

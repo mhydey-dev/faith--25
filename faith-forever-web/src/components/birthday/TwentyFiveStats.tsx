@@ -17,7 +17,7 @@ export function TwentyFiveStats() {
         <Reveal>
           <div className="max-w-2xl">
             <p className="text-xs font-medium uppercase tracking-[0.35em] text-sea">By the numbers</p>
-            <h2 className="mt-4 font-display text-4xl font-semibold sm:text-6xl">
+            <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight sm:text-6xl">
               {AGE} years of amazing
             </h2>
             <p className="mt-4 font-serif text-lg italic text-muted-foreground">

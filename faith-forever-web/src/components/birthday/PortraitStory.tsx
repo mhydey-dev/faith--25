@@ -31,17 +31,12 @@ export function PortraitStory({ initialPhotos }: { initialPhotos: Photo[] }) {
         </Reveal>
 
         <Reveal delay={100}>
-          <figure className="relative mt-14 overflow-hidden">
-            <div className="relative aspect-[4/5] w-full overflow-hidden sm:aspect-[16/10]">
-              <img
-                src={imageSrc}
-                alt="Faith Funmilayo"
-                className="h-full w-full object-cover"
-                width={1400}
-                height={900}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent" />
-            </div>
+          <figure className="relative mt-14 min-w-0">
+            <img
+              src={imageSrc}
+              alt="Faith Funmilayo"
+              className="mx-auto block h-auto max-h-[min(85svh,52rem)] w-auto max-w-full"
+            />
             <figcaption className="mt-6 font-serif text-sm italic text-muted-foreground">
               {featured?.caption?.trim()
                 ? featured.caption
