@@ -1,158 +1,166 @@
-// PLACEHOLDER CONTENT — swap in your real names, photos, notes and dates here.
+// PLACEHOLDER CONTENT — swap names, traits, quiz answers, and story text.
 import memory1 from "@/assets/memory-1.jpg";
 import memory2 from "@/assets/memory-2.jpg";
 import memory3 from "@/assets/memory-3.jpg";
 import memory4 from "@/assets/memory-4.jpg";
 
 export const HER_NAME = "Faith Funmilayo";
-export const MY_NAME = "[My Name]";
+export const HER_FIRST = "Faith";
+export const AGE = 25;
 
 export const sections = [
   { id: "hero", label: "Home" },
-  { id: "cake", label: "Make a Wish" },
-  { id: "letter", label: "Love Letter" },
-  { id: "reasons", label: "Reasons" },
-  { id: "memories", label: "Memory Lane" },
-  { id: "openwhen", label: "Open When" },
-  { id: "playlist", label: "Our Songs" },
-  { id: "wishes", label: "Our Year" },
+  { id: "personality", label: "Her" },
+  { id: "portrait", label: "Story" },
+  { id: "timeline", label: "Timeline" },
+  { id: "stats", label: "25 Years" },
+  { id: "quiz", label: "Quiz" },
+  { id: "letter", label: "Private" },
+  { id: "wishes", label: "Wishes" },
 ];
 
-/** ISO date we became "us" — swap for the real one. */
-export const TOGETHER_SINCE = "2022-06-14T19:30:00";
-/** Her birthday (month is 0-indexed free: use MM-DD). */
-export const BIRTHDAY_MMDD = "08-04";
-
-export const openWhenNotes = [
+export const personalityTraits = [
   {
-    label: "Open when you miss me",
-    note: "Close your eyes. I'm the one making tea too strong in your kitchen at 7am. I'll be back before the cup goes cold.",
+    title: "Warm light",
+    line: "She walks into a room and the temperature of the conversation changes — softer, kinder, somehow braver.",
   },
   {
-    label: "Open when you've had a hard day",
-    note: "You don't have to explain it. Put your phone down, breathe twice, and remember I'm proud of you on the days nothing goes right too.",
+    title: "Quiet fire",
+    line: "She does not shout her ambition. She builds it carefully, then surprises everyone when it blooms.",
   },
   {
-    label: "Open when you can't sleep",
-    note: "Count our plans instead of sheep: the flat with too many plants, the dog we keep renaming, the mornings with nowhere to be.",
+    title: "Loyal compass",
+    line: "If you are hers, you stay hers. Friendships with Faith are long roads, not short trips.",
   },
   {
-    label: "Open when you doubt yourself",
-    note: "I've seen you do the hard thing more times than you remember. I keep a list. It's long.",
+    title: "Playful mind",
+    line: "She can turn a dull Tuesday into a story worth retelling — usually with a joke you did not see coming.",
   },
   {
-    label: "Open when you're happy",
-    note: "Call me. I want the unfiltered version, all the details, in the wrong order, at full volume.",
+    title: "Deep feeler",
+    line: "She notices the unsaid. She remembers the small things. She loves with her whole attention.",
   },
   {
-    label: "Open when it's late and quiet",
-    note: "Whatever you're overthinking — I'm still here in the morning. That part isn't up for review.",
+    title: "Steady bloom",
+    line: "Twenty-five years of becoming — and she is still growing into someone even more herself.",
   },
 ];
 
-export const playlist = [
-  { title: "[Song Title]", artist: "[Artist]", why: "The one from that first car ride." },
-  { title: "[Song Title]", artist: "[Artist]", why: "You sang it wrong for a year. I never corrected you." },
-  { title: "[Song Title]", artist: "[Artist]", why: "Kitchen dancing, socks on tile." },
-  { title: "[Song Title]", artist: "[Artist]", why: "Airport, 6am, half asleep on my shoulder." },
-  { title: "[Song Title]", artist: "[Artist]", why: "The one I'd pick for the first dance." },
-];
+/** Featured story under the celebrant portrait — edit freely. */
+export const portraitStory = {
+  eyebrow: "Chapter twenty-five",
+  headline: "This is her season.",
+  paragraphs: [
+    "Faith Funmilayo is turning twenty-five — a full quarter-century of laughter, growth, late-night talks, and the kind of courage that does not always look loud.",
+    "Upload her portrait above, then leave this story (or rewrite it) so everyone who visits knows who she is: bright, intentional, and deeply loved.",
+    "Here is to the girl she was, the woman she is, and every version still ahead.",
+  ],
+};
 
-export const milestones = [
-  { label: "Days together", key: "days" },
-  { label: "Hours", key: "hours" },
-  { label: "Sunrises shared", key: "sunrises" },
-  { label: "Times I've fallen for you", key: "infinite" },
-];
-
-export const letterParagraphs = [
-  "My love, I have started this letter a hundred times in my head, usually at odd hours, usually while you were asleep beside me and the whole world felt quiet enough to hear how much I adore you.",
-  "Today you turn a year older, and I keep thinking about how ordinary days became my favourite days simply because you were in them. Grocery runs. Bad jokes. The way you hum when you are concentrating.",
-  "You have a way of making people feel safe. I have watched you do it for strangers, for friends, for me on days when I did not deserve that much patience. That kindness is the most beautiful thing I know.",
-  "So this is my small, imperfect attempt to say it out loud: thank you for choosing me, again and again. Happy birthday, my heart.",
-];
-
-export const letterQuotes = [
-  "You are not just my favourite person — you are my favourite feeling.",
-  "If I had to do all of this again, I'd find you sooner and love you longer.",
-];
-
-export const reasons = [
+export const twentyFiveStats = [
   {
-    title: "Her Kindness",
-    emoji: "🤍",
-    note: "The way you notice the person nobody else noticed, and make their whole day lighter without ever mentioning it.",
+    value: "25",
+    unit: "trips around the sun",
+    metaphor: "Enough orbits to collect a constellation of people who adore her.",
   },
   {
-    title: "Her Smile",
-    emoji: "✨",
-    note: "It arrives before your words do. I have rearranged entire days just to see it once more.",
+    value: "9,131",
+    unit: "days of becoming",
+    metaphor: "Roughly nine thousand mornings she woke up and chose to keep going.",
   },
   {
-    title: "Shared Adventures",
-    emoji: "🌍",
-    note: "Wrong turns, missed trains, questionable street food — somehow all of it becomes a story worth retelling with you.",
+    value: "∞",
+    unit: "smiles given away",
+    metaphor: "Statistically impossible to count. Metaphorically, they could light a city.",
   },
   {
-    title: "Quiet Moments",
-    emoji: "🕯️",
-    note: "Sunday mornings, no plans, your feet on my lap. That's the part of us I'd frame if I could.",
+    value: "100%",
+    unit: "main character energy",
+    metaphor: "Not louder than everyone — just unmistakably herself.",
   },
   {
-    title: "Her Strength",
-    emoji: "🌿",
-    note: "You carry heavy things gracefully, and you still leave room in your hands to hold mine.",
+    value: "1",
+    unit: "Faith Funmilayo",
+    metaphor: "There has only ever been one. The world is lucky she showed up.",
   },
   {
-    title: "Her Laugh",
-    emoji: "🎐",
-    note: "Loud, unfiltered, slightly ridiculous. My favourite sound in any room.",
-  },
-  {
-    title: "Her Mind",
-    emoji: "📖",
-    note: "You ask questions nobody else thinks to ask, and you actually listen to the answers.",
-  },
-  {
-    title: "Us",
-    emoji: "❤️",
-    note: "Whatever we are building — it is the safest, softest thing I have ever been part of.",
+    value: "25×",
+    unit: "reasons to celebrate",
+    metaphor: "One for every year — and then some for the ones still unwritten.",
   },
 ];
 
-export const memories = [
+export const quizQuestions = [
   {
-    date: "[Month, Year]",
-    title: "The day we met",
-    caption: "I was nervous. You pretended not to notice. Placeholder — swap in your photo.",
+    id: "q1",
+    prompt: "What lights Faith up the most?",
+    options: [
+      { label: "Being around people she loves", correct: true },
+      { label: "Sitting in silence forever", correct: false },
+      { label: "Skipping every celebration", correct: false },
+    ],
+  },
+  {
+    id: "q2",
+    prompt: "How would friends describe her in one word?",
+    options: [
+      { label: "Cold", correct: false },
+      { label: "Radiant", correct: true },
+      { label: "Forgettable", correct: false },
+    ],
+  },
+  {
+    id: "q3",
+    prompt: "At a party, Faith is most likely to…",
+    options: [
+      { label: "Hide in a cupboard all night", correct: false },
+      { label: "Make someone feel included", correct: true },
+      { label: "Leave without saying goodbye… forever", correct: false },
+    ],
+  },
+  {
+    id: "q4",
+    prompt: "Her love language feels closest to…",
+    options: [
+      { label: "Thoughtful presence & care", correct: true },
+      { label: "Ignoring texts for sport", correct: false },
+      { label: "Competitive complaining", correct: false },
+    ],
+  },
+  {
+    id: "q5",
+    prompt: "Turning 25 means…",
+    options: [
+      { label: "The end of the story", correct: false },
+      { label: "A brighter chapter starting now", correct: true },
+      { label: "Nothing special at all", correct: false },
+    ],
+  },
+];
+
+export const timelinePlaceholders = [
+  {
+    date: "Year one vibes",
+    title: "The beginning",
+    caption: "Tiny Faith, already stealing hearts. Swap this photo for a real memory.",
     image: memory1,
   },
   {
-    date: "[Month, Year]",
-    title: "Our first dinner in",
-    caption: "Burnt garlic, too much wine, perfect night. Placeholder — swap in your photo.",
+    date: "Growing years",
+    title: "Finding her laugh",
+    caption: "The years she learned how loud joy can be.",
     image: memory2,
   },
   {
-    date: "[Month, Year]",
-    title: "That night under the stars",
-    caption: "We stopped talking for a while and it was still the best conversation.",
+    date: "Becoming",
+    title: "Soft strength",
+    caption: "The chapter where she grew into her own name.",
     image: memory3,
   },
   {
-    date: "[Month, Year]",
-    title: "Little everyday things",
-    caption: "Flowers from the corner shop, because it was a Tuesday.",
+    date: "Now — 25",
+    title: "This glow",
+    caption: "The woman standing in her light. Upload more frames below.",
     image: memory4,
   },
-];
-
-export const wishes = [
-  "Trip to [Destination]",
-  "Stargazing night with a real telescope",
-  "Cook pasta from scratch (flour everywhere)",
-  "Sunrise hike, coffee in a flask",
-  "Learn a dance we can embarrass ourselves with",
-  "A weekend with no phones",
-  "Write each other letters to open next birthday",
 ];

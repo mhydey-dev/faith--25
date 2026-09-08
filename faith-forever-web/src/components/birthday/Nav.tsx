@@ -1,5 +1,6 @@
+import { Lock } from "lucide-react";
 import { useEffect, useState } from "react";
-import { sections } from "./data";
+import { AGE, HER_FIRST, sections } from "./data";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
@@ -24,13 +25,18 @@ export function Nav() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "bg-background/80 shadow-soft backdrop-blur-xl" : "bg-transparent"
+        scrolled || open ? "bg-background/85 shadow-soft backdrop-blur-xl" : "bg-transparent"
       }`}
     >
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 lg:flex lg:justify-between">
-        <a href="#hero" className="min-w-0 truncate font-serif text-lg tracking-tight">
-
-          <span className="text-gradient-rose">Faith&apos;s Day</span>
+        <a
+          href="#hero"
+          className={`min-w-0 truncate font-display text-lg font-bold tracking-tight transition-colors ${
+            scrolled || open ? "text-foreground" : "text-primary-foreground"
+          }`}
+        >
+          {HER_FIRST.toUpperCase()}
+          <span className="ml-2 text-marigold">{AGE}</span>
         </a>
 
         <nav className="hidden items-center gap-5 lg:flex">
@@ -38,13 +44,26 @@ export function Nav() {
             <a
               key={s.id}
               href={`#${s.id}`}
-              className={`relative text-xs uppercase tracking-[0.12em] transition-colors ${
-                active === s.id ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              className={`relative text-xs font-medium uppercase tracking-[0.12em] transition-colors ${
+                scrolled
+                  ? active === s.id
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                  : active === s.id
+                    ? "text-accent"
+                    : "text-primary-foreground/75 hover:text-primary-foreground"
               }`}
             >
               {s.label}
+              {s.id === "letter" ? (
+                <Lock className="ml-1 inline h-3 w-3 align-[-2px] opacity-80" aria-hidden />
+              ) : null}
               {active === s.id && (
-                <span className="absolute -bottom-1.5 left-0 h-px w-full bg-primary" />
+                <span
+                  className={`absolute -bottom-1.5 left-0 h-px w-full ${
+                    scrolled ? "bg-primary" : "bg-accent"
+                  }`}
+                />
               )}
             </a>
           ))}
@@ -55,29 +74,40 @@ export function Nav() {
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
-          className="shrink-0 rounded-full border border-border bg-card/70 p-2.5 lg:hidden"
+          className={`shrink-0 border p-2.5 lg:hidden ${
+            scrolled || open
+              ? "border-border bg-card/70"
+              : "border-primary-foreground/30 bg-ink/20"
+          }`}
         >
           <span className="grid h-4 w-5 place-items-center">
             <span
-              className={`block h-px w-5 bg-foreground transition-transform ${open ? "translate-y-px rotate-45" : "-translate-y-1"}`}
+              className={`block h-px w-5 transition-transform ${
+                scrolled || open ? "bg-foreground" : "bg-primary-foreground"
+              } ${open ? "translate-y-px rotate-45" : "-translate-y-1"}`}
             />
             <span
-              className={`block h-px w-5 bg-foreground transition-transform ${open ? "-translate-y-px -rotate-45" : "translate-y-1"}`}
+              className={`block h-px w-5 transition-transform ${
+                scrolled || open ? "bg-foreground" : "bg-primary-foreground"
+              } ${open ? "-translate-y-px -rotate-45" : "translate-y-1"}`}
             />
           </span>
         </button>
       </div>
 
       {open && (
-        <nav className="animate-fade-in max-h-[70vh] overflow-y-auto border-t border-border bg-background/95 px-5 pb-5 pt-2 backdrop-blur-xl lg:hidden">
+        <nav className="max-h-[70vh] overflow-y-auto border-t border-border bg-background/95 px-5 pb-5 pt-2 backdrop-blur-xl lg:hidden">
           {sections.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
               onClick={() => setOpen(false)}
-              className="block border-b border-border/60 py-3 font-serif text-lg last:border-0"
+              className="block border-b border-border/60 py-3 font-display text-lg last:border-0"
             >
               {s.label}
+              {s.id === "letter" ? (
+                <Lock className="ml-1.5 inline h-3.5 w-3.5 align-[-2px] text-marigold" aria-hidden />
+              ) : null}
             </a>
           ))}
         </nav>

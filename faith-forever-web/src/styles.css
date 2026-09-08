@@ -31,81 +31,56 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
-  --color-blush: var(--blush);
-  --color-blush-deep: var(--blush-deep);
-  --color-cream: var(--cream);
-  --color-ivory: var(--ivory);
-  --color-rosegold: var(--rosegold);
-  --color-plum: var(--plum);
-  --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: var(--ink);
+  --color-mist: var(--mist);
+  --color-marigold: var(--marigold);
+  --color-sea: var(--sea);
+  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Literata", Georgia, serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --radius: 1rem;
-  --background: oklch(0.985 0.012 70);
-  --foreground: oklch(0.32 0.045 15);
-  --card: oklch(0.995 0.006 80);
-  --card-foreground: oklch(0.32 0.045 15);
-  --popover: oklch(0.995 0.006 80);
-  --popover-foreground: oklch(0.32 0.045 15);
-  --primary: oklch(0.72 0.108 12);
-  --primary-foreground: oklch(0.99 0.008 60);
-  --secondary: oklch(0.947 0.026 30);
-  --secondary-foreground: oklch(0.38 0.05 15);
-  --muted: oklch(0.955 0.018 45);
-  --muted-foreground: oklch(0.55 0.035 20);
-  --accent: oklch(0.9 0.045 40);
-  --accent-foreground: oklch(0.35 0.05 15);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0.005 60);
-  --border: oklch(0.9 0.028 35);
-  --input: oklch(0.9 0.028 35);
-  --ring: oklch(0.78 0.09 15);
+  --radius: 0.75rem;
+  --background: oklch(0.97 0.012 175);
+  --foreground: oklch(0.22 0.035 175);
+  --card: oklch(0.99 0.006 175);
+  --card-foreground: oklch(0.22 0.035 175);
+  --popover: oklch(0.99 0.006 175);
+  --popover-foreground: oklch(0.22 0.035 175);
+  --primary: oklch(0.38 0.07 175);
+  --primary-foreground: oklch(0.98 0.01 95);
+  --secondary: oklch(0.93 0.025 175);
+  --secondary-foreground: oklch(0.28 0.04 175);
+  --muted: oklch(0.94 0.015 175);
+  --muted-foreground: oklch(0.48 0.03 175);
+  --accent: oklch(0.82 0.12 85);
+  --accent-foreground: oklch(0.28 0.05 75);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.98 0.01 95);
+  --border: oklch(0.88 0.02 175);
+  --input: oklch(0.88 0.02 175);
+  --ring: oklch(0.55 0.08 175);
 
-  --blush: oklch(0.89 0.055 15);
-  --blush-deep: oklch(0.72 0.108 12);
-  --cream: oklch(0.975 0.018 80);
-  --ivory: oklch(0.99 0.01 90);
-  --rosegold: oklch(0.75 0.075 45);
-  --plum: oklch(0.42 0.06 350);
+  --ink: oklch(0.2 0.04 175);
+  --mist: oklch(0.94 0.02 175);
+  --marigold: oklch(0.78 0.14 85);
+  --sea: oklch(0.45 0.08 195);
 
-  --gradient-romance: linear-gradient(
-    135deg,
-    oklch(0.985 0.012 70) 0%,
-    oklch(0.955 0.03 25) 45%,
-    oklch(0.94 0.04 45) 100%
+  --gradient-hero: linear-gradient(
+    165deg,
+    oklch(0.22 0.045 175 / 0.72) 0%,
+    oklch(0.28 0.05 185 / 0.45) 45%,
+    oklch(0.35 0.06 95 / 0.55) 100%
   );
-  --gradient-rosegold: linear-gradient(
-    100deg,
-    oklch(0.78 0.08 45),
-    oklch(0.72 0.108 12),
-    oklch(0.8 0.07 55)
+  --gradient-wash: linear-gradient(
+    180deg,
+    oklch(0.96 0.018 175) 0%,
+    oklch(0.94 0.03 95) 50%,
+    oklch(0.95 0.02 200) 100%
   );
-  --shadow-soft: 0 18px 50px -22px oklch(0.6 0.1 15 / 0.45);
-  --shadow-lift: 0 30px 70px -28px oklch(0.55 0.11 15 / 0.5);
-}
-
-.dark {
-  --background: oklch(0.2 0.02 15);
-  --foreground: oklch(0.96 0.01 60);
-  --card: oklch(0.25 0.025 15);
-  --card-foreground: oklch(0.96 0.01 60);
-  --popover: oklch(0.25 0.025 15);
-  --popover-foreground: oklch(0.96 0.01 60);
-  --primary: oklch(0.78 0.1 15);
-  --primary-foreground: oklch(0.2 0.02 15);
-  --secondary: oklch(0.3 0.03 15);
-  --secondary-foreground: oklch(0.96 0.01 60);
-  --muted: oklch(0.3 0.03 15);
-  --muted-foreground: oklch(0.72 0.03 30);
-  --accent: oklch(0.34 0.04 20);
-  --accent-foreground: oklch(0.96 0.01 60);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.7 0.08 15);
+  --shadow-soft: 0 20px 50px -28px oklch(0.3 0.05 175 / 0.4);
+  --shadow-lift: 0 28px 60px -24px oklch(0.28 0.06 175 / 0.45);
 }
 
 @layer base {
@@ -120,6 +95,8 @@
 
   body {
     background-color: var(--color-background);
+    background-image: var(--gradient-wash);
+    background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
@@ -128,18 +105,17 @@
   h2,
   h3,
   h4 {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 }
 
-@utility text-gradient-rose {
-  background-image: var(--gradient-rosegold);
-  background-clip: text;
-  color: transparent;
+@utility text-gold {
+  color: var(--color-marigold);
 }
 
-@utility bg-romance {
-  background-image: var(--gradient-romance);
+@utility bg-ink {
+  background-color: var(--color-ink);
 }
 
 @utility shadow-soft {
@@ -163,19 +139,13 @@
   }
 }
 
-@keyframes float-heart {
+@keyframes confetti-fall {
   0% {
-    transform: translateY(-10vh) translateX(0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.8;
-  }
-  90% {
-    opacity: 0.5;
+    transform: translateY(-12vh) rotate(0deg);
+    opacity: 1;
   }
   100% {
-    transform: translateY(110vh) translateX(40px) rotate(25deg);
+    transform: translateY(105vh) rotate(720deg);
     opacity: 0;
   }
 }
@@ -191,31 +161,45 @@
   }
 }
 
-@keyframes confetti-fall {
+@keyframes drift-up {
   0% {
-    transform: translateY(-12vh) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(105vh) rotate(720deg);
+    transform: translateY(12px);
     opacity: 0;
   }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-@keyframes soft-pulse {
+@keyframes number-glow {
   0%,
   100% {
-    transform: scale(1);
+    text-shadow: 0 0 0 transparent;
   }
   50% {
-    transform: scale(1.06);
+    text-shadow: 0 0 28px oklch(0.78 0.14 85 / 0.35);
   }
 }
 
-@utility animate-float-heart {
-  animation: float-heart linear infinite;
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-@utility animate-soft-pulse {
-  animation: soft-pulse 2.4s ease-in-out infinite;
+@utility animate-drift-up {
+  animation: drift-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-number-glow {
+  animation: number-glow 3.5s ease-in-out infinite;
+}
+
+@utility animate-float-soft {
+  animation: float-soft 5s ease-in-out infinite;
 }

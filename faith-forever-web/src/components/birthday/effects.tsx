@@ -7,15 +7,15 @@ type Piece = {
   duration: number;
   color: string;
   size: number;
-  heart: boolean;
+  round: boolean;
 };
 
 const COLORS = [
-  "var(--blush-deep)",
-  "var(--rosegold)",
-  "var(--blush)",
-  "var(--plum)",
-  "var(--accent)",
+  "var(--marigold)",
+  "var(--sea)",
+  "var(--primary)",
+  "oklch(0.92 0.06 95)",
+  "oklch(0.7 0.08 175)",
 ];
 
 let seed = 0;
@@ -29,14 +29,13 @@ function makePieces(n: number): Piece[] {
       left: r(12.9898) * 100,
       delay: r(78.233) * 0.9,
       duration: 2.4 + r(43.7) * 2.2,
-      color: COLORS[Math.floor(r(93.1) * COLORS.length)] ?? "var(--blush-deep)",
+      color: COLORS[Math.floor(r(93.1) * COLORS.length)] ?? "var(--marigold)",
       size: 7 + r(21.3) * 10,
-      heart: r(51.7) > 0.65,
+      round: r(51.7) > 0.55,
     };
   });
 }
 
-/** Full-screen confetti blast. Renders nothing until fired. */
 export function useConfetti() {
   const [pieces, setPieces] = useState<Piece[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -51,41 +50,25 @@ export function useConfetti() {
 
   const overlay = pieces.length ? (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-[60] overflow-hidden">
-      {pieces.map((p) =>
-        p.heart ? (
-          <span
-            key={p.id}
-            className="absolute top-0"
-            style={{
-              left: `${p.left}%`,
-              color: p.color,
-              fontSize: `${p.size + 4}px`,
-              animation: `confetti-fall ${p.duration}s cubic-bezier(0.3,0.6,0.5,1) ${p.delay}s forwards`,
-            }}
-          >
-            ❤
-          </span>
-        ) : (
-          <span
-            key={p.id}
-            className="absolute top-0 rounded-[2px]"
-            style={{
-              left: `${p.left}%`,
-              width: `${p.size}px`,
-              height: `${p.size * 1.6}px`,
-              background: p.color,
-              animation: `confetti-fall ${p.duration}s cubic-bezier(0.3,0.6,0.5,1) ${p.delay}s forwards`,
-            }}
-          />
-        ),
-      )}
+      {pieces.map((p) => (
+        <span
+          key={p.id}
+          className={`absolute top-0 ${p.round ? "rounded-full" : "rounded-[2px]"}`}
+          style={{
+            left: `${p.left}%`,
+            width: `${p.size}px`,
+            height: `${p.round ? p.size : p.size * 1.6}px`,
+            background: p.color,
+            animation: `confetti-fall ${p.duration}s cubic-bezier(0.3,0.6,0.5,1) ${p.delay}s forwards`,
+          }}
+        />
+      ))}
     </div>
   ) : null;
 
   return { fire, overlay };
 }
 
-/** Small sparkle burst anchored to a clicked element. */
 export function useSparkle() {
   const [bursts, setBursts] = useState<
     { id: number; x: number; y: number; parts: { dx: number; dy: number }[] }[]
@@ -108,7 +91,7 @@ export function useSparkle() {
         b.parts.map((p, i) => (
           <span
             key={`${b.id}-${i}`}
-            className="absolute text-primary"
+            className="absolute text-accent"
             style={
               {
                 left: b.x,
@@ -120,7 +103,7 @@ export function useSparkle() {
               } as React.CSSProperties
             }
           >
-            {i % 2 ? "✦" : "❤"}
+            ✦
           </span>
         )),
       )}
