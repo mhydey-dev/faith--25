@@ -434,7 +434,13 @@ function StudioPage() {
           <h2 className="font-display text-2xl font-semibold">Celebrant portrait</h2>
           {portrait ? (
             <div className="space-y-3">
-              <img src={portrait.imageUrl} alt="" className="aspect-[16/10] w-full object-cover" />
+              <div className="flex min-h-[22rem] items-center justify-center overflow-hidden bg-mist sm:min-h-[28rem]">
+                <img
+                  src={portrait.imageUrl}
+                  alt=""
+                  className="max-h-[28rem] w-auto max-w-full object-contain object-center sm:max-h-[32rem]"
+                />
+              </div>
               <button
                 type="button"
                 onClick={() => void onDeletePhoto(portrait._id)}
