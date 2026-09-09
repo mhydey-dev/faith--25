@@ -54,7 +54,7 @@ export function LetterPasswordForm({
             required
             autoComplete="off"
             autoFocus={autoFocus}
-            placeholder="The word only you two know"
+            placeholder="Private Entry: Passcode needed"
             className="flex h-11 w-full border border-input bg-background px-4 pr-11 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           <button

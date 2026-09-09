@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { format } from "date-fns";
+import { Heart } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -9,8 +10,32 @@ import {
   postMessage,
   type BirthdayMessage,
 } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { HER_FIRST } from "./data";
 import { Reveal } from "./Reveal";
+
+type WishField = "author" | "content";
+
+function FieldPrompt({ id, message }: { id: string; message: string }) {
+  return (
+    <div
+      id={id}
+      role="alert"
+      className="absolute bottom-[calc(100%+12px)] left-1/2 z-20 w-max max-w-[min(20rem,calc(100%-0.5rem))] -translate-x-1/2 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-1 duration-200"
+    >
+      <div className="relative z-10 flex items-center gap-2 rounded-md border border-sea/30 bg-card px-3 py-2 text-sm text-foreground shadow-soft">
+        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] bg-marigold text-accent-foreground">
+          <Heart className="h-3 w-3 fill-current" />
+        </span>
+        {message}
+      </div>
+      <span
+        aria-hidden
+        className="absolute left-1/2 top-full h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-b border-r border-sea/30 bg-card"
+      />
+    </div>
+  );
+}
 
 function formatPostedAt(value: string) {
   try {
@@ -24,6 +49,9 @@ export function WishWall({ initialMessages }: { initialMessages: BirthdayMessage
   const queryClient = useQueryClient();
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
+  const [emptyField, setEmptyField] = useState<WishField | null>(null);
+  const authorRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: messages = initialMessages } = useQuery({
     queryKey: messageQueryKey,
@@ -53,7 +81,17 @@ export function WishWall({ initialMessages }: { initialMessages: BirthdayMessage
     if (mutation.isPending) return;
     const nextAuthor = author.trim();
     const nextContent = content.trim();
-    if (!nextAuthor || !nextContent) return;
+    if (!nextAuthor) {
+      setEmptyField("author");
+      authorRef.current?.focus();
+      return;
+    }
+    if (!nextContent) {
+      setEmptyField("content");
+      contentRef.current?.focus();
+      return;
+    }
+    setEmptyField(null);
     mutation.mutate({ author: nextAuthor, content: nextContent });
   };
 
@@ -73,34 +111,66 @@ export function WishWall({ initialMessages }: { initialMessages: BirthdayMessage
         </Reveal>
 
         <Reveal delay={80}>
-          <form onSubmit={onSubmit} className="mt-12 space-y-4 border-t border-border pt-10">
+          <form noValidate onSubmit={onSubmit} className="mt-12 space-y-4 border-t border-border pt-10">
             <label className="block text-left">
               <span className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 Your name
               </span>
-              <input
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                maxLength={80}
-                required
-                placeholder="How should we sign it?"
-                className="mt-2 flex h-11 w-full border border-input bg-background px-4 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
+              <span className="relative mt-2 block">
+                {emptyField === "author" ? (
+                  <FieldPrompt id="wish-author-hint" message="Please fill in this field." />
+                ) : null}
+                <input
+                  ref={authorRef}
+                  value={author}
+                  onChange={(e) => {
+                    setAuthor(e.target.value);
+                    if (emptyField === "author") setEmptyField(null);
+                  }}
+                  maxLength={80}
+                  required
+                  aria-invalid={emptyField === "author"}
+                  aria-describedby={emptyField === "author" ? "wish-author-hint" : undefined}
+                  placeholder="How should we sign it?"
+                  className={cn(
+                    "flex h-11 w-full border bg-background px-4 text-base focus-visible:outline-none focus-visible:ring-1",
+                    emptyField === "author"
+                      ? "border-marigold ring-1 ring-marigold/70"
+                      : "border-input focus-visible:ring-ring",
+                  )}
+                />
+              </span>
             </label>
 
             <label className="block text-left">
               <span className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 Your wish
               </span>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                maxLength={1000}
-                required
-                rows={4}
-                placeholder={`Happy 25th, ${HER_FIRST}…`}
-                className="mt-2 w-full border border-input bg-background px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
+              <span className="relative mt-2 block">
+                {emptyField === "content" ? (
+                  <FieldPrompt id="wish-content-hint" message="Please fill in this field." />
+                ) : null}
+                <textarea
+                  ref={contentRef}
+                  value={content}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    if (emptyField === "content") setEmptyField(null);
+                  }}
+                  maxLength={1000}
+                  required
+                  rows={4}
+                  aria-invalid={emptyField === "content"}
+                  aria-describedby={emptyField === "content" ? "wish-content-hint" : undefined}
+                  placeholder={`Happy 25th, ${HER_FIRST}…`}
+                  className={cn(
+                    "w-full border bg-background px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-1",
+                    emptyField === "content"
+                      ? "border-marigold ring-1 ring-marigold/70"
+                      : "border-input focus-visible:ring-ring",
+                  )}
+                />
+              </span>
             </label>
 
             <button

@@ -30,7 +30,7 @@ export function PrivateUnlockDialog({
             Private letter
           </DialogTitle>
           <DialogDescription className="font-serif text-base italic">
-            Enter the password to open a page only she should see.
+          Nice try! This page is strictly for the birthday girl
           </DialogDescription>
         </DialogHeader>
         <LetterPasswordForm

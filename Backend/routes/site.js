@@ -2,7 +2,12 @@ const express = require("express");
 const multer = require("multer");
 const Site = require("../models/Site");
 const { requireAdmin, hashLetterPassword } = require("../middleware/admin");
-const { cloudinary, letterMediaUpload, isVideoUpload, friendlyUploadError } = require("../config/cloudinary");
+const {
+  cloudinary,
+  letterMediaUpload,
+  isVideoUpload,
+  friendlyUploadError,
+} = require("../config/cloudinary");
 
 const router = express.Router();
 
@@ -59,7 +64,12 @@ function youtubeVideoId(url) {
       const fromQuery = parsed.searchParams.get("v");
       if (fromQuery) return fromQuery;
       const parts = parsed.pathname.split("/").filter(Boolean);
-      if ((parts[0] === "embed" || parts[0] === "shorts" || parts[0] === "live") && parts[1]) {
+      if (
+        (parts[0] === "embed" ||
+          parts[0] === "shorts" ||
+          parts[0] === "live") &&
+        parts[1]
+      ) {
         return parts[1];
       }
     }
@@ -76,7 +86,10 @@ function isAllowedVideoLink(url) {
     const parsed = new URL(url);
     const path = parsed.pathname.toLowerCase();
     if (/\.(mp4|webm|mov|m4v)$/i.test(path)) return true;
-    return parsed.hostname.includes("res.cloudinary.com") && path.includes("/video/upload/");
+    return (
+      parsed.hostname.includes("res.cloudinary.com") &&
+      path.includes("/video/upload/")
+    );
   } catch {
     return false;
   }
@@ -104,7 +117,9 @@ async function addOrReplaceLetterMedia(site, next, atRaw, res) {
     return true;
   }
   if (site.loveLetterImages.length >= 20) {
-    res.status(400).json({ error: "You can add up to 20 photos and videos in the letter." });
+    res
+      .status(400)
+      .json({ error: "You can add up to 20 photos and videos in the letter." });
     return false;
   }
   site.loveLetterImages.push(next);
@@ -115,9 +130,11 @@ function publicSitePayload(site) {
   return {
     quiz: site.quiz || [],
     hasLoveLetter: Boolean(
-      site.loveLetterBody && String(site.loveLetterBody).trim() && site.loveLetterPasswordHash,
+      site.loveLetterBody &&
+      String(site.loveLetterBody).trim() &&
+      site.loveLetterPasswordHash,
     ),
-    loveLetterTitle: site.loveLetterTitle || "Only for you",
+    loveLetterTitle: site.loveLetterTitle || "Only for you ifemi ❤️💕",
     updatedAt: site.updatedAt,
   };
 }
@@ -162,7 +179,10 @@ router.put("/admin", requireAdmin, async (req, res, next) => {
 
     if (Array.isArray(body.quiz)) {
       site.quiz = body.quiz.map((q, index) => ({
-        id: typeof q.id === "string" && q.id.trim() ? q.id.trim() : `q${index + 1}`,
+        id:
+          typeof q.id === "string" && q.id.trim()
+            ? q.id.trim()
+            : `q${index + 1}`,
         prompt: String(q.prompt || "").trim(),
         options: Array.isArray(q.options)
           ? q.options.map((o) => ({
@@ -198,7 +218,9 @@ router.put("/admin", requireAdmin, async (req, res, next) => {
     }
 
     if (typeof body.letterPassword === "string" && body.letterPassword.trim()) {
-      site.loveLetterPasswordHash = hashLetterPassword(body.letterPassword.trim());
+      site.loveLetterPasswordHash = hashLetterPassword(
+        body.letterPassword.trim(),
+      );
     }
 
     await site.save();
@@ -221,92 +243,118 @@ router.delete("/admin/music", requireAdmin, async (_req, res, next) => {
   }
 });
 
-router.post("/admin/letter-images", requireAdmin, (req, res, next) => {
-  letterMediaUpload.single("image")(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      const message =
-        err.code === "LIMIT_FILE_SIZE"
-          ? "File must be 40MB or smaller. For longer clips, paste a YouTube or Drive link."
-          : err.message;
-      res.status(400).json({ error: message });
-      return;
-    }
-    if (err) {
-      res.status(400).json({ error: friendlyUploadError(err) });
-      return;
-    }
-    next();
-  });
-}, async (req, res, next) => {
-  try {
-    if (!req.file) {
-      res.status(400).json({ error: "A photo or video file is required (field name: image)." });
-      return;
-    }
+router.post(
+  "/admin/letter-images",
+  requireAdmin,
+  (req, res, next) => {
+    letterMediaUpload.single("image")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        const message =
+          err.code === "LIMIT_FILE_SIZE"
+            ? "File must be 40MB or smaller. For longer clips, paste a YouTube or Drive link."
+            : err.message;
+        res.status(400).json({ error: message });
+        return;
+      }
+      if (err) {
+        res.status(400).json({ error: friendlyUploadError(err) });
+        return;
+      }
+      next();
+    });
+  },
+  async (req, res, next) => {
+    try {
+      if (!req.file) {
+        res
+          .status(400)
+          .json({
+            error: "A photo or video file is required (field name: image).",
+          });
+        return;
+      }
 
-    const site = await Site.getMain(true);
-    const caption = typeof req.body.caption === "string" ? req.body.caption.trim() : "";
-    const next = {
-      imageUrl: req.file.path,
-      cloudinaryId: req.file.filename,
-      caption,
-      kind: isVideoUpload(req.file) ? "video" : "image",
-    };
+      const site = await Site.getMain(true);
+      const caption =
+        typeof req.body.caption === "string" ? req.body.caption.trim() : "";
+      const next = {
+        imageUrl: req.file.path,
+        cloudinaryId: req.file.filename,
+        caption,
+        kind: isVideoUpload(req.file) ? "video" : "image",
+      };
 
-    if (!(await addOrReplaceLetterMedia(site, next, req.body.at, res))) return;
-    await site.save();
-    res.status(201).json(adminSitePayload(site));
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.post("/admin/letter-video-link", requireAdmin, async (req, res, next) => {
-  try {
-    const url = parseMusicUrl(req.body?.url);
-    if (!url) {
-      res.status(400).json({ error: "Enter a valid http(s) video link." });
-      return;
+      if (!(await addOrReplaceLetterMedia(site, next, req.body.at, res)))
+        return;
+      await site.save();
+      res.status(201).json(adminSitePayload(site));
+    } catch (err) {
+      next(err);
     }
-    if (!isAllowedVideoLink(url)) {
-      res.status(400).json({ error: "Paste a YouTube, Google Drive, or direct video (.mp4) link." });
-      return;
+  },
+);
+
+router.post(
+  "/admin/letter-video-link",
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const url = parseMusicUrl(req.body?.url);
+      if (!url) {
+        res.status(400).json({ error: "Enter a valid http(s) video link." });
+        return;
+      }
+      if (!isAllowedVideoLink(url)) {
+        res
+          .status(400)
+          .json({
+            error:
+              "Paste a YouTube, Google Drive, or direct video (.mp4) link.",
+          });
+        return;
+      }
+
+      const site = await Site.getMain(true);
+      const caption =
+        typeof req.body.caption === "string" ? req.body.caption.trim() : "";
+      const next = {
+        imageUrl: url,
+        cloudinaryId: "",
+        caption,
+        kind: "video",
+      };
+
+      if (!(await addOrReplaceLetterMedia(site, next, req.body.at, res)))
+        return;
+      await site.save();
+      res.status(201).json(adminSitePayload(site));
+    } catch (err) {
+      next(err);
     }
+  },
+);
 
-    const site = await Site.getMain(true);
-    const caption = typeof req.body.caption === "string" ? req.body.caption.trim() : "";
-    const next = {
-      imageUrl: url,
-      cloudinaryId: "",
-      caption,
-      kind: "video",
-    };
-
-    if (!(await addOrReplaceLetterMedia(site, next, req.body.at, res))) return;
-    await site.save();
-    res.status(201).json(adminSitePayload(site));
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.delete("/admin/letter-images/:id", requireAdmin, async (req, res, next) => {
-  try {
-    const site = await Site.getMain(true);
-    if (!Array.isArray(site.loveLetterImages)) site.loveLetterImages = [];
-    const image = site.loveLetterImages.id(req.params.id);
-    if (!image) {
-      res.status(404).json({ error: "Letter photo not found." });
-      return;
+router.delete(
+  "/admin/letter-images/:id",
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const site = await Site.getMain(true);
+      if (!Array.isArray(site.loveLetterImages)) site.loveLetterImages = [];
+      const image = site.loveLetterImages.id(req.params.id);
+      if (!image) {
+        res.status(404).json({ error: "Letter photo not found." });
+        return;
+      }
+      await destroyLetterMedia(image);
+      image.deleteOne();
+      await site.save();
+      res.json(adminSitePayload(site));
+    } catch (err) {
+      next(err);
     }
-    await destroyLetterMedia(image);
-    image.deleteOne();
-    await site.save();
-    res.json(adminSitePayload(site));
-  } catch (err) {
-    next(err);
-  }
-});
+  },
+);
 
 router.post("/letter/unlock", async (req, res, next) => {
   try {
@@ -327,7 +375,10 @@ router.post("/letter/unlock", async (req, res, next) => {
     const expected = Buffer.from(site.loveLetterPasswordHash);
     const got = Buffer.from(attempt);
 
-    if (expected.length !== got.length || !cryptoTimingSafeEqual(expected, got)) {
+    if (
+      expected.length !== got.length ||
+      !cryptoTimingSafeEqual(expected, got)
+    ) {
       res.status(401).json({ error: "Wrong password." });
       return;
     }

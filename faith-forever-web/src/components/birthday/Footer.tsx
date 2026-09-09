@@ -12,7 +12,7 @@ export function Footer({ onSecret }: { onSecret: () => void }) {
           Happy birthday, {HER_NAME}.
         </p>
         <p className="mx-auto mt-6 max-w-md text-sm text-primary-foreground/60">
-          Made for her quarter-century — with love, photos, and a little mischief.
+        Curated for her 25th—memories, milestones, and a few surprises
         </p>
       </Reveal>
 

@@ -51,7 +51,7 @@ function StudioPage() {
   const [saving, setSaving] = useState(false);
 
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
-  const [loveLetterTitle, setLoveLetterTitle] = useState("Only for you");
+  const [loveLetterTitle, setLoveLetterTitle] = useState("Only for you ifemi ❤️💕");
   const [loveLetterBody, setLoveLetterBody] = useState("");
   const [letterPassword, setLetterPassword] = useState("");
   const [showLetterPassword, setShowLetterPassword] = useState(false);
@@ -73,7 +73,7 @@ function StudioPage() {
 
   const applySite = (site: AdminSite) => {
     setQuiz(site.quiz.length ? site.quiz : [emptyQuestion(0)]);
-    setLoveLetterTitle(site.loveLetterTitle || "Only for you");
+    setLoveLetterTitle(site.loveLetterTitle || "Only for you ifemi ❤️💕");
     setLoveLetterBody(site.loveLetterBody || "");
     setHasLetterPassword(site.hasLetterPassword);
     setMusicUrl(site.musicUrl || "");

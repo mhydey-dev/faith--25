@@ -25,7 +25,7 @@ import {
 const emptySite: PublicSite = {
   quiz: [],
   hasLoveLetter: false,
-  loveLetterTitle: "Only for you",
+  loveLetterTitle: "Only for you ifemi ❤️💕",
 };
 
 export const Route = createFileRoute("/")({
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "25 Years of Faith" },
       {
         property: "og:description",
-        content: "The Story • The Numbers • The Journey • The Trivia • The Words",
+        content: "The Story • The Journey • The Trivia • The Words",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

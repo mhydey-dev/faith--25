@@ -142,11 +142,11 @@ export function PrivateMusic({
       ) : null}
       <div className="min-w-0">
         <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-sea">
-          Only after unlock
+          A special song for you my love ❤️💕
         </p>
-        <p className="truncate font-serif text-base italic text-foreground/80">
+        {/* <p className="truncate font-serif text-base italic text-foreground/80">
           {title ? `${title} — while you read` : "A song while you read"}
-        </p>
+        </p> */}
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <button

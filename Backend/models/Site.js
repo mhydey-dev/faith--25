@@ -16,9 +16,14 @@ const quizQuestionSchema = new mongoose.Schema(
       type: [quizOptionSchema],
       validate: {
         validator(value) {
-          return Array.isArray(value) && value.length >= 2 && value.some((o) => o.correct);
+          return (
+            Array.isArray(value) &&
+            value.length >= 2 &&
+            value.some((o) => o.correct)
+          );
         },
-        message: "Each question needs at least 2 options and one correct answer.",
+        message:
+          "Each question needs at least 2 options and one correct answer.",
       },
     },
   },
@@ -65,7 +70,7 @@ const siteSchema = new mongoose.Schema(
     musicTitle: { type: String, default: "", trim: true, maxlength: 120 },
     loveLetterTitle: {
       type: String,
-      default: "Only for you",
+      default: "Only for you ifemi ❤️💕",
       trim: true,
       maxlength: 120,
     },
@@ -91,7 +96,9 @@ siteSchema.statics.getMain = async function getMain(includeSecret = false) {
   if (!site) {
     site = await this.create({ key: "main", quiz: DEFAULT_QUIZ });
     if (includeSecret) {
-      site = await this.findOne({ key: "main" }).select("+loveLetterPasswordHash");
+      site = await this.findOne({ key: "main" }).select(
+        "+loveLetterPasswordHash",
+      );
     }
   }
   return site;
