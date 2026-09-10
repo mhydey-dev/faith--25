@@ -3,6 +3,8 @@ import { Pause, Play, RotateCcw } from "lucide-react";
 
 import { playableAudioUrl, youtubeEmbedSrc, youtubeVideoId } from "@/lib/music";
 
+const PLAY_FOR_MS = 40 * 60 * 1000;
+
 function sendYoutubeCommand(
   iframe: HTMLIFrameElement | null,
   func: string,
@@ -23,6 +25,9 @@ export function PrivateMusic({
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const playStartedAt = useRef<number | null>(null);
+  const playedMs = useRef(0);
+  const stopTimer = useRef<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [origin, setOrigin] = useState("");
 
@@ -32,9 +37,58 @@ export function PrivateMusic({
     return playableAudioUrl(url);
   }, [url, videoId]);
 
+  const clearStopTimer = () => {
+    if (stopTimer.current == null) return;
+    window.clearTimeout(stopTimer.current);
+    stopTimer.current = null;
+  };
+
+  const haltPlayback = () => {
+    clearStopTimer();
+    playStartedAt.current = null;
+    playedMs.current = PLAY_FOR_MS;
+    setPlaying(false);
+    sendYoutubeCommand(iframeRef.current, "pauseVideo");
+    audioRef.current?.pause();
+  };
+
+  const beginPlaying = () => {
+    if (playedMs.current >= PLAY_FOR_MS) {
+      playedMs.current = 0;
+    }
+    if (playStartedAt.current == null) {
+      playStartedAt.current = Date.now();
+    }
+    setPlaying(true);
+  };
+
+  const pausePlaying = () => {
+    if (playStartedAt.current != null) {
+      playedMs.current += Date.now() - playStartedAt.current;
+      playStartedAt.current = null;
+    }
+    setPlaying(false);
+  };
+
   useEffect(() => {
     setOrigin(typeof window !== "undefined" ? window.location.origin : "");
   }, []);
+
+  useEffect(() => {
+    clearStopTimer();
+    if (!playing) return;
+    const remaining = PLAY_FOR_MS - playedMs.current;
+    if (remaining <= 0) {
+      haltPlayback();
+      return;
+    }
+    stopTimer.current = window.setTimeout(() => {
+      haltPlayback();
+    }, remaining);
+    return clearStopTimer;
+    // haltPlayback closes over the latest refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playing]);
 
   useEffect(() => {
     if (!audioSrc) return;
@@ -43,8 +97,8 @@ export function PrivateMusic({
     audio.preload = "auto";
     audioRef.current = audio;
 
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
+    const onPlay = () => beginPlaying();
+    const onPause = () => pausePlaying();
     audio.addEventListener("play", onPlay);
     audio.addEventListener("pause", onPause);
 
@@ -58,6 +112,7 @@ export function PrivateMusic({
       audio.removeEventListener("pause", onPause);
       audioRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioSrc]);
 
   const startYoutube = () => {
@@ -68,7 +123,7 @@ export function PrivateMusic({
     );
     sendYoutubeCommand(iframe, "unMute");
     sendYoutubeCommand(iframe, "playVideo");
-    setPlaying(true);
+    beginPlaying();
   };
 
   useEffect(() => {
@@ -87,7 +142,7 @@ export function PrivateMusic({
     if (videoId) {
       if (playing) {
         sendYoutubeCommand(iframeRef.current, "pauseVideo");
-        setPlaying(false);
+        pausePlaying();
       } else {
         startYoutube();
       }
@@ -107,6 +162,9 @@ export function PrivateMusic({
   };
 
   const restart = async () => {
+    clearStopTimer();
+    playedMs.current = 0;
+    playStartedAt.current = Date.now();
     if (videoId) {
       sendYoutubeCommand(iframeRef.current, "seekTo", [0, true]);
       sendYoutubeCommand(iframeRef.current, "unMute");
