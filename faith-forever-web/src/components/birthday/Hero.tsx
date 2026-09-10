@@ -1,27 +1,71 @@
+import { useEffect, useState } from "react";
+
 import heroBg from "@/assets/hero-bg.jpg";
+import portrait1 from "@/assets/hero-portrait-1.jpg";
+import portrait2 from "@/assets/hero-portrait-2.jpg";
+import portrait3 from "@/assets/hero-portrait-3.jpg";
+import { cn } from "@/lib/utils";
 import { AGE, HER_FIRST, HER_NAME } from "./data";
 import { useSparkle } from "./effects";
 
+const portraits = [portrait1, portrait2, portrait3];
+
 export function Hero() {
   const { burst, overlay } = useSparkle();
+  const [slide, setSlide] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setSlide((current) => (current + 1) % portraits.length);
+    }, 10_000);
+    return () => window.clearInterval(id);
+  }, []);
 
   return (
     <section id="hero" className="relative flex min-h-[100svh] items-end overflow-hidden">
       {overlay}
+
+      <div className="absolute inset-0 wide-hero:hidden" aria-hidden>
+        {portraits.map((src, index) => (
+          <img
+            key={src}
+            src={src}
+            alt=""
+            width={819}
+            height={1024}
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover object-[center_18%] transition-opacity duration-[1200ms] ease-in-out",
+              index === slide
+                ? "opacity-100 motion-safe:animate-hero-ken"
+                : "opacity-0",
+            )}
+          />
+        ))}
+      </div>
+
       <img
         src={heroBg}
         alt=""
         width={1920}
         height={1200}
-        className="absolute inset-0 h-full w-full scale-105 object-cover"
+        className="absolute inset-0 hidden h-full w-full object-cover wide-hero:block"
+      />
+
+      <div
+        className="absolute inset-0 wide-hero:hidden"
+        style={{
+          backgroundImage:
+            "linear-gradient(180deg, oklch(0.22 0.045 175 / 0.22) 0%, oklch(0.22 0.045 175 / 0.32) 42%, oklch(0.16 0.04 175 / 0.78) 100%)",
+        }}
+        aria-hidden
       />
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 hidden wide-hero:block"
         style={{ backgroundImage: "var(--gradient-hero)" }}
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 opacity-30"
+        className="pointer-events-none absolute inset-0 opacity-20 wide-hero:opacity-30"
         style={{
           backgroundImage:
             "radial-gradient(circle at 20% 30%, oklch(0.78 0.14 85 / 0.35), transparent 40%), radial-gradient(circle at 80% 70%, oklch(0.55 0.08 195 / 0.3), transparent 35%)",
