@@ -29,7 +29,7 @@ const musicStorage = new CloudinaryStorage({
 
 const upload = multer({
   storage: imageStorage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 40 * 1024 * 1024 },
   fileFilter(_req, file, cb) {
     if (/^image\/(jpe?g|png|webp|gif)$/i.test(file.mimetype)) {
       cb(null, true);

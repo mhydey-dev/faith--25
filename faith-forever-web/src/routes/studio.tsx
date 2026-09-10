@@ -20,6 +20,7 @@ import {
   type Photo,
   type QuizQuestion,
 } from "@/lib/api";
+import { compressImageFile } from "@/lib/compress-image";
 import { isLetterVideo, letterVideoPoster } from "@/lib/letter-media";
 import { playableAudioUrl, youtubeVideoId } from "@/lib/music";
 
@@ -270,7 +271,8 @@ function StudioPage() {
   ) => {
     if (!file) return;
     try {
-      const photo = await uploadPhoto({ file, kind, caption, adminKey });
+      const ready = await compressImageFile(file);
+      const photo = await uploadPhoto({ file: ready, kind, caption, adminKey });
       setPhotos((current) => {
         if (kind === "portrait") {
           return [photo, ...current.filter((p) => p.kind !== "portrait")];

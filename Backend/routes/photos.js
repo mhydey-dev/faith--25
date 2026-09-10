@@ -24,7 +24,7 @@ router.post("/upload", requireAdmin, (req, res, next) => {
     if (err instanceof multer.MulterError) {
       const message =
         err.code === "LIMIT_FILE_SIZE"
-          ? "Image must be 5MB or smaller."
+          ? "Image must be 40MB or smaller."
           : err.message;
       res.status(400).json({ error: message });
       return;
