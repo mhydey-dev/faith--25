@@ -14,7 +14,7 @@ const imageStorage = new CloudinaryStorage({
     folder: "faith-forever",
     allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
     resource_type: "image",
-    transformation: [{ width: 1600, crop: "limit" }],
+    transformation: [{ width: 2560, crop: "limit", quality: "auto:best" }],
   },
 });
 
@@ -72,7 +72,7 @@ const letterMediaStorage = new CloudinaryStorage({
       folder: "faith-forever",
       allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
       resource_type: "image",
-      transformation: [{ width: 1600, crop: "limit" }],
+      transformation: [{ width: 2560, crop: "limit", quality: "auto:best" }],
     };
   },
 });

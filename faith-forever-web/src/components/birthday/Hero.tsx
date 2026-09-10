@@ -31,8 +31,8 @@ export function Hero() {
             key={src}
             src={src}
             alt=""
-            width={819}
-            height={1024}
+            width={1760}
+            height={2200}
             className={cn(
               "absolute inset-0 h-full w-full object-cover object-[center_18%] transition-opacity duration-[1200ms] ease-in-out",
               index === slide

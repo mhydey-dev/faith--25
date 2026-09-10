@@ -1,5 +1,5 @@
-const MAX_EDGE = 2048;
-const JPEG_QUALITY = 0.86;
+const MAX_EDGE = 2560;
+const JPEG_QUALITY = 0.92;
 
 export async function compressImageFile(file: File): Promise<File> {
   if (!/^image\/(jpe?g|png|webp)$/i.test(file.type)) {
